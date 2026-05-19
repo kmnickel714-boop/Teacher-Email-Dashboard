@@ -349,11 +349,22 @@
       <label for="teacherName">Teacher Name</label>
       <input id="teacherName" placeholder="Example: Mr. Smith" />
 
-      <label for="customDetail">Specific Detail</label>
-      <textarea id="customDetail" placeholder="Add the specific behavior, device concern, or positive highlight."></textarea>
+      <label for="customDetail">Additional Details</label>
+      <textarea id="customDetail" placeholder="Add any additional information, context, behavior details, or positive highlights."></textarea>
+
+      <label for="nextStepSuggestion">Next Step Suggestion</label>
+      <select id="nextStepSuggestion">
+        <option value="">-- Select a suggested next step --</option>
+        <option value="Student has been issued a detention to be served within the next week.">Student issued detention</option>
+        <option value="Student can claim a prize for their awesomeness.">Student can claim a prize</option>
+        <option value="Please discuss this situation with your student at home.">Discuss at home</option>
+        <option value="I will continue monitoring the situation and provide updates if needed.">Teacher monitoring situation</option>
+        <option value="Thank you for supporting your student's success in class.">Thank parent for support</option>
+        <option value="custom">Custom response...</option>
+      </select>
 
       <label for="nextStep">Next Step / Request</label>
-      <textarea id="nextStep" placeholder="Example: Please discuss this with Alex tonight. / I would love for you to celebrate this accomplishment."></textarea>
+      <textarea id="nextStep" placeholder="Select a suggestion above or type your own custom response."></textarea>
 
       <label for="parentEmail">Parent/Guardian Email</label>
       <input id="parentEmail" type="email" placeholder="Optional: parent@example.com" />
@@ -431,7 +442,7 @@ Warmly,
       }
     };
 
-    const fields = ["parentName", "studentName", "className", "dateText", "teacherName", "customDetail", "nextStep", "parentEmail"];
+    const fields = ["parentName", "studentName", "className", "dateText", "teacherName", "customDetail", "nextStep", "parentEmail", "nextStepSuggestion"];
     const scenarioCards = document.querySelectorAll(".scenario-card");
     const subjectPreview = document.getElementById("subjectPreview");
     const bodyPreview = document.getElementById("bodyPreview");
@@ -514,7 +525,26 @@ Warmly,
     });
 
     fields.forEach(id => {
-      document.getElementById(id).addEventListener("input", updatePreview);
+      const element = document.getElementById(id);
+      if (!element) return;
+
+      element.addEventListener("input", updatePreview);
+      element.addEventListener("change", updatePreview);
+    });
+
+    const nextStepSuggestion = document.getElementById("nextStepSuggestion");
+    const nextStepText = document.getElementById("nextStep");
+
+    nextStepSuggestion.addEventListener("change", () => {
+      if (nextStepSuggestion.value && nextStepSuggestion.value !== "custom") {
+        nextStepText.value = nextStepSuggestion.value;
+      }
+
+      if (nextStepSuggestion.value === "custom") {
+        nextStepText.focus();
+      }
+
+      updatePreview();
     });
 
     mailBtn.addEventListener("click", () => {
