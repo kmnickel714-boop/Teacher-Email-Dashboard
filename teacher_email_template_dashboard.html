@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Email Template Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --border: #d0d5dd;
+      --success: #047857;
+      --warning: #b45309;
+      --danger: #b42318;
+      --shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #eef4ff, var(--bg));
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 32px 22px 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: -0.04em;
+    }
+
+    header p {
+      max-width: 780px;
+      margin: 12px auto 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+
+    .dashboard {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 42px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(208, 213, 221, 0.75);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .controls {
+      padding: 22px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .preview-panel {
+      padding: 22px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .scenario-cards {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .scenario-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px;
+      cursor: pointer;
+      background: #fff;
+      transition: 0.18s ease;
+    }
+
+    .scenario-card:hover,
+    .scenario-card.active {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.08);
+    }
+
+    .scenario-card strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .scenario-card span {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.35;
+    }
+
+    .scenario-card[data-scenario="positive"] strong {
+      color: var(--success);
+    }
+
+    .scenario-card[data-scenario="device"] strong {
+      color: var(--warning);
+    }
+
+    .scenario-card[data-scenario="behavior"] strong {
+      color: var(--danger);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button,
+    .mail-button {
+      border: none;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.94rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .secondary {
+      background: #eef2ff;
+      color: var(--accent-dark);
+    }
+
+    .secondary:hover {
+      background: #dbe4ff;
+    }
+
+    .ghost {
+      background: #f2f4f7;
+      color: #344054;
+    }
+
+    .ghost:hover {
+      background: #e4e7ec;
+    }
+
+    .copy-status {
+      margin-top: 12px;
+      min-height: 22px;
+      color: var(--success);
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .email-meta {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .subject-box,
+    .body-box {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fbfcff;
+    }
+
+    .subject-box {
+      padding: 14px 16px;
+    }
+
+    .subject-label,
+    .body-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 7px;
+    }
+
+    .subject-text {
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .body-box {
+      padding: 16px;
+      min-height: 460px;
+      white-space: pre-wrap;
+      line-height: 1.55;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+
+    .divider {
+      border: 0;
+      border-top: 1px solid #eaecf0;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      button,
+      .mail-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Teacher Email Template Dashboard</h1>
+    <p>Select a scenario, fill in the details, then copy the finished email or open it in your computer’s default email app.</p>
+  </header>
+
+  <main class="dashboard">
+    <aside class="panel controls">
+      <h2 class="section-title">1. Choose a template</h2>
+      <div class="scenario-cards" role="listbox" aria-label="Email template scenarios">
+        <div class="scenario-card active" data-scenario="behavior" tabindex="0" role="option" aria-selected="true">
+          <strong>Scenario 1: Classroom Disruption</strong>
+          <span>Student is misbehaving and causing disruption to learning.</span>
+        </div>
+        <div class="scenario-card" data-scenario="device" tabindex="0" role="option" aria-selected="false">
+          <strong>Scenario 2: Personal Device Policy</strong>
+          <span>Student is misusing a personal device under district protocol.</span>
+        </div>
+        <div class="scenario-card" data-scenario="positive" tabindex="0" role="option" aria-selected="false">
+          <strong>Scenario 3: Positive Note Home</strong>
+          <span>Celebrate something special or awesome about the student.</span>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <h2 class="section-title">2. Fill in details</h2>
+      <label for="parentName">Parent/Guardian Name</label>
+      <input id="parentName" placeholder="Example: Ms. Johnson" />
+
+      <label for="studentName">Student Name</label>
+      <input id="studentName" placeholder="Example: Alex" />
+
+      <div class="two-col">
+        <div>
+          <label for="className">Class</label>
+          <input id="className" placeholder="Example: Biology" />
+        </div>
+        <div>
+          <label for="dateText">Date</label>
+          <input id="dateText" type="date" />
+        </div>
+      </div>
+
+      <label for="teacherName">Teacher Name</label>
+      <input id="teacherName" placeholder="Example: Mr. Smith" />
+
+      <label for="customDetail">Specific Detail</label>
+      <textarea id="customDetail" placeholder="Add the specific behavior, device concern, or positive highlight."></textarea>
+
+      <label for="nextStep">Next Step / Request</label>
+      <textarea id="nextStep" placeholder="Example: Please discuss this with Alex tonight. / I would love for you to celebrate this accomplishment."></textarea>
+
+      <label for="parentEmail">Parent/Guardian Email</label>
+      <input id="parentEmail" type="email" placeholder="Optional: parent@example.com" />
+      <p class="hint">The email address is optional. The Outlook button will attempt to launch the desktop Outlook application directly. If Outlook does not open, set Outlook as your default email app in Windows.</p>
+
+      <div class="button-row">
+        <button class="primary" id="copyBtn">Copy Email</button>
+        <button class="secondary" id="mailBtn" type="button">Open in Outlook</button>
+        <button class="ghost" id="clearBtn">Clear Fields</button>
+      </div>
+      <div class="copy-status" id="copyStatus" aria-live="polite"></div>
+    </aside>
+
+    <section class="panel preview-panel">
+      <h2 class="section-title">3. Preview</h2>
+      <div class="email-meta">
+        <div class="subject-box">
+          <span class="subject-label">Subject</span>
+          <div class="subject-text" id="subjectPreview"></div>
+        </div>
+        <div class="body-box">
+          <span class="body-label">Email Body</span>
+          <div id="bodyPreview"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const templates = {
+      behavior: {
+        subject: "Classroom concern regarding {studentName}",
+        body: `Dear {parentName},
+
+I hope you are doing well. I am writing to share a classroom concern involving {studentName} in {className} on {dateText}.
+
+During class, {studentName} was causing disruption to the learning environment. Specifically, {customDetail}
+
+I have addressed the behavior with {studentName} in class, and I want to partner with you so we can help {studentName} make positive choices moving forward. {nextStep}
+
+Please feel free to reply with any questions or information that may help me support {studentName} at school.
+
+Thank you,
+{teacherName}`
+      },
+      device: {
+        subject: "Personal device policy concern regarding {studentName}",
+        body: `Dear {parentName},
+
+I hope you are doing well. I am reaching out about a concern involving {studentName}'s use of a personal device in {className} on {dateText}.
+
+In accordance with district protocol, students are expected to follow the personal device policy during instructional time. Today, {studentName} was not following that expectation. Specifically, {customDetail}
+
+I reminded {studentName} of the policy and redirected them back to the learning task. {nextStep}
+
+Thank you for your support in helping {studentName} remain focused and successful in class.
+
+Sincerely,
+{teacherName}`
+      },
+      positive: {
+        subject: "Positive note about {studentName}",
+        body: `Dear {parentName},
+
+I wanted to send a quick positive note home about {studentName} in {className}.
+
+Today, {studentName} did something especially awesome: {customDetail}
+
+It was wonderful to see this, and I wanted to make sure you heard about it. {nextStep}
+
+Thank you for all you do to support {studentName}. It is a pleasure to have them in class.
+
+Warmly,
+{teacherName}`
+      }
+    };
+
+    const fields = ["parentName", "studentName", "className", "dateText", "teacherName", "customDetail", "nextStep", "parentEmail"];
+    const scenarioCards = document.querySelectorAll(".scenario-card");
+    const subjectPreview = document.getElementById("subjectPreview");
+    const bodyPreview = document.getElementById("bodyPreview");
+    const mailBtn = document.getElementById("mailBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const copyStatus = document.getElementById("copyStatus");
+
+    let currentScenario = "behavior";
+
+    function getFieldValue(id) {
+      const el = document.getElementById(id);
+      if (!el) return "";
+      if (id === "dateText" && el.value) {
+        const date = new Date(el.value + "T00:00:00");
+        return date.toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      }
+      return el.value.trim();
+    }
+
+    function fallbackValue(key) {
+      const fallbacks = {
+        parentName: "Parent/Guardian",
+        studentName: "your student",
+        className: "class",
+        dateText: "today",
+        teacherName: "Teacher Name",
+        customDetail: "[add specific detail here]",
+        nextStep: "[add next step or request here]"
+      };
+      return fallbacks[key] || "";
+    }
+
+    function fillTemplate(text) {
+      return text.replace(/\{(.*?)\}/g, (_, key) => getFieldValue(key) || fallbackValue(key));
+    }
+
+    function buildEmail() {
+      const template = templates[currentScenario];
+      const subject = fillTemplate(template.subject);
+      const body = fillTemplate(template.body);
+      return { subject, body };
+    }
+
+    function buildMailtoLink() {
+      const { subject, body } = buildEmail();
+      const to = encodeURIComponent(getFieldValue("parentEmail"));
+      return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function updatePreview() {
+      const { subject, body } = buildEmail();
+      subjectPreview.textContent = subject;
+      bodyPreview.textContent = body;
+      copyStatus.textContent = "";
+    }
+
+    function setScenario(scenario) {
+      currentScenario = scenario;
+      scenarioCards.forEach(card => {
+        const active = card.dataset.scenario === scenario;
+        card.classList.toggle("active", active);
+        card.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      updatePreview();
+    }
+
+    scenarioCards.forEach(card => {
+      card.addEventListener("click", () => setScenario(card.dataset.scenario));
+      card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          setScenario(card.dataset.scenario);
+        }
+      });
+    });
+
+    fields.forEach(id => {
+      document.getElementById(id).addEventListener("input", updatePreview);
+    });
+
+    mailBtn.addEventListener("click", () => {
+      const { subject, body } = buildEmail();
+      const to = encodeURIComponent(getFieldValue("parentEmail"));
+
+      const outlookLink = `ms-outlook://compose?to=${to}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const mailtoLink = buildMailtoLink();
+
+      try {
+        window.location.href = outlookLink;
+
+        setTimeout(() => {
+          window.location.href = mailtoLink;
+        }, 1200);
+
+        copyStatus.textContent = "Attempting to open Microsoft Outlook desktop application.";
+      } catch (error) {
+        window.location.href = mailtoLink;
+        copyStatus.textContent = "Opening default email application.";
+      }
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      const { subject, body } = buildEmail();
+      const emailText = `Subject: ${subject}\n\n${body}`;
+
+      try {
+        await navigator.clipboard.writeText(emailText);
+        copyStatus.textContent = "Email copied to clipboard.";
+      } catch (error) {
+        const textArea = document.createElement("textarea");
+        textArea.value = emailText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        copyStatus.textContent = "Email copied to clipboard.";
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      fields.forEach(id => {
+        document.getElementById(id).value = "";
+      });
+      updatePreview();
+    });
+
+    updatePreview();
+  </script>
+</body>
+</html>
